@@ -3,9 +3,9 @@
 	"displayName": "qingcloud-color-tips",
 	"description": "青云前端项目颜色变量提示",
 	"publisher": "liuyuqin",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"engines": {
-		"vscode": "^1.51.0"
+		"vscode": "^1.45.0"
 	},
 	"categories": [
 		"Other"
@@ -35,7 +35,7 @@
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
-		"@types/vscode": "^1.51.0",
+		"@types/vscode": "^1.45.0",
 		"@types/glob": "^7.1.3",
 		"@types/mocha": "^8.0.4",
 		"@types/node": "^12.11.7",

@@ -195,9 +195,20 @@
     "#124d6f": "$blue-16",
     "#155b83": "$blue-15",
     "#186997": "$blue-14",
-    "#0b75b7": "$blue-13",
-    "#1e85c7": "$blue-12",
-    "#2193d3": "$blue-11",
+    "#0b75b7": {
+        "$blue-13": "#0b75b7",
+        "$info-active": "#0b75b7"
+    },
+    "#1e85c7": {
+        "$blue-12": "#1e85c7",
+        "$info-hover": "#1e85c7"
+    },
+    "#2193d3": {
+        "$blue-11": "#2193d3",
+        "$info": "#2193d3",
+        "$info-border": "#2193d3",
+        "$icon-info": "#2193d3"
+    },
     "#229ce9": "$blue-10",
     "#3aa2ed": "$blue-9",
     "#4facef": "$blue-8",
@@ -208,7 +219,10 @@
     "#b8def9": "$blue-3",
     "#cde8fb": "$blue-2",
     "#e2f2fd": "$blue-1",
-    "#f7fcff": "$blue-0",
+    "#f7fcff": {
+        "$blue-0": "#f7fcff",
+        "$info-background": "#f7fcff"
+    },
 
 
     "#0e221e": "$dark-green-20",
