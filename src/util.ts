@@ -1,38 +1,105 @@
 import * as vscode from 'vscode';
-import { readdirSync } from 'fs';
-import { resolve } from 'path';
+import { round as _round, isObject as _isObject} from 'lodash';
+interface Color {
+	[key: string]: string | Object;
+}
 
-const getProjectPath = (document: any) => {
-    if (!document) {
-        document = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.document : null;
-    }
-    if (!document) {
-        return '';
-    }
-    const currentFile = (document.uri ? document.uri : document).fsPath;
-    let projectPath = null;
+// 变量内容缓存map
+const VARIABLE_COLOR = require( './assets/scss-variable.json');
 
-    if (vscode.workspace.workspaceFolders) {
-        let workspaceFolders: any = vscode.workspace.workspaceFolders.map(item => item.uri.path);
-        // 由于存在Multi-root工作区，暂时没有特别好的判断方法，先这样粗暴判断
-        // 如果发现只有一个根文件夹，读取其子文件夹作为 workspaceFolders
-        if (workspaceFolders.length === 1 && workspaceFolders[0] === vscode.workspace.rootPath) {
-            const rootPath = workspaceFolders[0];
-            var files = readdirSync(rootPath);
-            workspaceFolders = files.filter((name: any) => !/^\./g.test(name)).map((name: string) => resolve(rootPath, name));
-            // vscode.workspace.rootPath会不准确，且已过时
-            // return vscode.workspace.rootPath + '/' + this._getProjectName(vscode, document);
-        }
-        workspaceFolders.forEach((folder: any) => {
-            if (currentFile.indexOf(folder) === 0) {
-                projectPath = folder;
-            }
-        });
-    }
-    if (!projectPath) {
-        return '';
-    }
-    return projectPath;
+const hex2rgb = (hex: string) => {
+    return [parseInt('0x' + hex.substring(1, 3)), parseInt('0x' + hex.substring(3, 5)),  parseInt('0x' + hex.substring(5, 7))];
 };
 
-export { getProjectPath };
+const hex2hsl = (hex: string) => {
+    const rgb = [parseInt('0x' + hex.substring(1, 3)) / 255, parseInt('0x' + hex.substring(3, 5)) / 255, parseInt('0x' + hex.substring(5, 7)) / 255];
+    let min, max, delta, h, s, l;
+    let r = Number(rgb[0]), g = Number(rgb[1]), b = Number(rgb[2]);
+    min = Math.min(r, Math.min(g, b));
+    max = Math.max(r, Math.max(g, b));
+    delta = max - min;
+    l = (min + max) / 2;
+    s = 0;
+    if (l > 0 && l < 1) {
+        s = delta / (l < 0.5 ? (2 * l) : (2 - 2 * l));
+    }
+    h = 0;
+    if(delta > 0) {
+      if (max === r && max !== g) {
+        h += (g - b) / delta;
+      }
+      if (max === g && max !== b) {
+        h += (2 + (b - r) / delta);
+      }
+      if (max === b && max !== r) {
+        h += (4 + (r - g) / delta);
+      }
+      h /= 6;
+    }
+    return [_round(h * 255), _round(s * 255), _round(l * 255)];
+};
+
+const init = () => {
+    return Object.keys(VARIABLE_COLOR).map((k: string) => {
+        const rgb = hex2rgb(k);
+        const hsl = hex2hsl(k);
+        return [rgb[0], rgb[1], rgb[2], hsl[0], hsl[1], hsl[2], k, VARIABLE_COLOR[k]];
+    });
+};
+
+const VARIABLE_COLOR_FORMAT: Array<any> = init();
+
+const getColorName = (hex: string) => {
+    const rgb = hex2rgb(hex);
+    const r = rgb[0], g = rgb[1], b = rgb[2];
+    const hsl = hex2hsl(hex);
+    const h = hsl[0], s = hsl[1], l = hsl[2];
+    let ndf1 = 0, ndf2 = 0, ndf = 0;
+    let cl = -1, df = -1;
+    let v = '';
+    let hasExist = false;
+    Object.keys(VARIABLE_COLOR).forEach((k: string) => {
+        // 匹配已有的hex
+        if (hex === k) {
+            hasExist = true;
+            v = '可替换的颜色变量:  \n';
+            const o: Color = VARIABLE_COLOR[k];
+            if (_isObject(o)) {
+                Object.keys(o).forEach((i: string) => {
+                    v += `* ${i}： ${hex}\n`;
+                });
+            } else {
+                v += `* ${o}： ${hex}`;
+            }
+        }
+    });
+    // 当不存在对应的hex值时
+    if (!hasExist) {
+        VARIABLE_COLOR_FORMAT.forEach((item: any, index: number) => {
+            ndf1 = Math.pow(r - item[0], 2) + Math.pow(g - item[1], 2) + Math.pow(b - item[2], 2);
+            ndf2 = Math.pow(h - item[3], 2) + Math.pow(s - item[4], 2) + Math.pow(l - item[5], 2);
+            ndf = ndf1 + ndf2 * 2;
+            if (df < 0 || df > ndf) {
+                df = ndf;
+                cl = index;
+            }
+        });
+        if (cl < 0) {
+            v += `* ${hex}：无效的颜色代码`;
+        } else {
+            v += `无直接替换的颜色变量，${hex} 相近的颜色是:  \n`;
+            const k = VARIABLE_COLOR_FORMAT[cl][6];
+            const o = VARIABLE_COLOR_FORMAT[cl][7];
+            if (_isObject(o)) {
+                Object.keys(o).forEach((i: string) => {
+                    v += `* ${i}： ${k}\n`;
+                });
+            } else {
+                v += `* ${o}： ${k}`;
+            }
+        }
+    }
+    return v;
+};
+
+export { getColorName };
