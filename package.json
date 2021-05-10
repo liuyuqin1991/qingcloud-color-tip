@@ -3,7 +3,8 @@
 	"displayName": "qingcloud-color-tips",
 	"description": "青云前端项目颜色变量提示",
 	"publisher": "liuyuqin",
-	"version": "0.1.0",
+	"version": "0.1.1",
+	"repository": "https://github.com/liuyuqin1991/vscode-qingcloud-color-tip",
 	"engines": {
 		"vscode": "^1.45.0"
 	},
