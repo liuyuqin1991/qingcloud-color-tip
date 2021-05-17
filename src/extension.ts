@@ -5,7 +5,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const provideHover = (document: any, position: vscode.Position, token: Object) => {
 		const word = document.getText(document.getWordRangeAtPosition(position));
-		return new vscode.Hover(getColorName(word));
+		if (/^#[0-9A-Za-z]{6}$/g.test(word)) {
+			return new vscode.Hover(getColorName(word));
+		}
 	};
 
 	const provider = vscode.languages.registerHoverProvider(
