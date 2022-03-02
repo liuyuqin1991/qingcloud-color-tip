@@ -1,18 +1,31 @@
 # qingcloud-color-tips 
 
-这是一个青云专属前端开发子portal项目时hover颜色CSS时提示公共颜色变量的vscode插件
+> 这是一个在vscode插件，可以在scss或stylus文件里hover颜色css提示公共颜色变量，支持相同颜色变量及相近颜色变量两种情况的变量提示。
+
+<i>注：该项目使用的是青云项目中使用的颜色库，不含其他涉密文件</i>
+
+## 示例
+
+* 相同颜色变量提示
+
+![yes](./md-images/yes.png)
+
+* 相近颜色变量提示
+
+![no](./md-images/no.png)
+
+## 安装方法
+
+vscode插件菜单中搜索 `qingcloud-color-tips` 即可安装
+
+## 二次开发
+
+如需更换颜色库，可fork并修改项目中的scss-variable.scss变量，正常发布vscode插件即可
 
 
 
-## 插件更新
 
-```
-vsce publish
 
-#如果提示The Personal Access Token used has expired.则需要重新登录
 
-# 1. 登录 https://dev.azure.com/414097512/_usersSettings/tokens
-# 2. 创建access token（注：Name 随便填，Organization 选第二个，Expiration (UTC) 自定义一年，Scopes 选Full access），创建完成后复制token
-# 3. vsce login 粘贴token，登录完成后再重新vsce publish
 
-```
+
